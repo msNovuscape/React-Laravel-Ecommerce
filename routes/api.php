@@ -70,7 +70,7 @@ Route::group(['prefix' => 'ambassador'], function() {
     $ambassadorRoutes = [
         ['type' => 'post', 'url' => '/links', 'action' => [LinkController::class, 'store']],
         ['type' => 'get', 'url' => '/rankings', 'action' => [StatsController::class, 'rankings']],
-        ['type' => 'get', 'url' => '/rankings', 'action' => [StatsController::class, 'rankings']],
+        // ['type' => 'get', 'url' => '/rankings', 'action' => [StatsController::class, 'rankings']],
     ];
     Route::get('/product/frontend', [ProductController::class, 'frontend']);
     Route::get('/product/backend', [ProductController::class, 'backend']);

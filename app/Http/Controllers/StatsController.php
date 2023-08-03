@@ -27,6 +27,9 @@ class StatsController extends Controller
     }
 
     public function rankings(){
+
+        dd('ok');
+        // return Redis::zrange('rankings', 0 , -1, 'WITHSCORES');
         $ambassadors = User::ambassador()->get();
 
         $rankings = $ambassadors->map(fn($ambassador) => [
