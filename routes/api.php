@@ -76,4 +76,5 @@ Route::group(['prefix' => 'ambassador'], function() {
     Route::get('/product/backend', [ProductController::class, 'backend']);
     defineCommonRoutes('ambassador', $ambassadorRoutes);
 
+    
 });
