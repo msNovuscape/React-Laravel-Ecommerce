@@ -1,0 +1,24 @@
+name: Update PR Description
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  update-description:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update PR Description
+        run: |
+          PR_BRANCH=$(echo $GITHUB_REF | awk 'BEGIN{FS="/"} {print $3}')
+          PR_BODY=$(jq -r .pull_request.body $GITHUB_EVENT_PATH)
+          NEW_LINE="./merge_setup.sh -A -d $PR_BRANCH"
+          echo "$PR_BODY" > $GITHUB_EVENT_PATH
+          echo -e "$NEW_LINE\n\n$PR_BODY" > $GITHUB_EVENT_PATH
+          git add $GITHUB_EVENT_PATH
+          git commit -m "Update PR description"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
