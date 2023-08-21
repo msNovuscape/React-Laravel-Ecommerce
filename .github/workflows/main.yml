@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
       - name: Update PR Message
         run: |
           PR_NUMBER=$GITHUB_EVENT_NUMBER
