@@ -10,13 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Read PR Template
+        id: pr-template
+        run: |
+          PR_TEMPLATE_PATH=".github/PULL_REQUEST_TEMPLATE.md" # Replace with your PR template file path
+          if [ -f "$PR_TEMPLATE_PATH" ]; then
+            PR_TEMPLATE_CONTENT=$(cat "$PR_TEMPLATE_PATH")
+            echo "::set-output name=template::$PR_TEMPLATE_CONTENT"
+          else
+            echo "::set-output name=template::"
+          fi
+
       - name: Update PR Description
         run: |
           PR_BRANCH=$(echo $GITHUB_REF | awk 'BEGIN{FS="/"} {print $3}')
           PR_BODY=$(jq -r .pull_request.body $GITHUB_EVENT_PATH)
-          NEW_LINE="./merge_setup.sh -A -d $PR_BRANCH"
-          echo "$PR_BODY" > $GITHUB_EVENT_PATH
-          echo -e "$NEW_LINE\n\n$PR_BODY" > $GITHUB_EVENT_PATH
+          PR_TEMPLATE="$PR_TEMPLATE_CONTENT"
+          NEW_LINE="* Branch: $PR_BRANCH"
+          UPDATED_BODY="$PR_TEMPLATE\n\n$NEW_LINE\n\n$PR_BODY"
+          echo "$UPDATED_BODY" > $GITHUB_EVENT_PATH
           git add $GITHUB_EVENT_PATH
           git commit -m "Update PR description"
           git push
