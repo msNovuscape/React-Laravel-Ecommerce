@@ -1,4 +1,4 @@
-name: Update PR Message
+name: Update PR Description
 
 on:
   pull_request:
@@ -6,19 +6,31 @@ on:
       - opened
 
 jobs:
-  update-pr-message:
+  update-pr-description:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Update PR Message
+      - name: Read PR Template
+        id: pr-template
+        run: |
+          PR_TEMPLATE_PATH=".github/PULL_REQUEST_TEMPLATE.md" # Replace with your PR template file path
+          if [ -f "$PR_TEMPLATE_PATH" ]; then
+            PR_TEMPLATE_CONTENT=$(cat "$PR_TEMPLATE_PATH")
+            echo "::set-output name=template::$PR_TEMPLATE_CONTENT"
+          else
+            echo "::set-output name=template::"
+          fi
+
+      - name: Update PR Description
         run: |
           PR_NUMBER=$GITHUB_EVENT_NUMBER
           PR_BRANCH=$(echo $GITHUB_REF | awk 'BEGIN{FS="/"} {print $3}')
-          NEW_MESSAGE="./merge_setup.sh -A -d $PR_BRANCH"
-          UPDATED_MESSAGE=$(echo -e "$NEW_MESSAGE\n\n$(gh pr view $PR_NUMBER --json body -q .body)")
+          PR_TEMPLATE="$PR_TEMPLATE_CONTENT"
+          NEW_LINE="* Branch: $PR_BRANCH"
+          UPDATED_MESSAGE=$(echo -e "$PR_TEMPLATE\n\n$NEW_LINE")
           gh pr edit $PR_NUMBER --body "$UPDATED_MESSAGE"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
