@@ -19,12 +19,8 @@ jobs:
 
       - name: Update PR Template
         run: |
-          branch=$(cat <<EOF
-          ./merge_setup.sh -A -d \${{ steps.get-branch.outputs.branch }}
-          EOF
-          )
-
-          sed -i "s|{{branch-placeholder}}|${branch}|" .github/PULL_REQUEST_TEMPLATE.md
+          branch_name=$(echo "${{ steps.get-branch.outputs.branch }}")
+          sed -i "s|{{branch-name}}|$branch_name|" .github/PULL_REQUEST_TEMPLATE.md
 
           git add .github/PULL_REQUEST_TEMPLATE.md
           git commit -m "Update PR template with branch name"
