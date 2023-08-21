@@ -1,0 +1,33 @@
+name: Update PR Template
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  update-template:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Get Branch Name
+        id: get-branch
+        run: echo "::set-output name=branch::$(echo $GITHUB_REF | awk -F '/' '{print $3}')"
+
+      - name: Update PR Template
+        run: |
+          branch=$(cat <<EOF
+          ./merge_setup.sh -A -d \${{ steps.get-branch.outputs.branch }}
+          EOF
+          )
+
+          sed -i "s|{{branch-placeholder}}|${branch}|" .github/PULL_REQUEST_TEMPLATE.md
+
+          git add .github/PULL_REQUEST_TEMPLATE.md
+          git commit -m "Update PR template with branch name"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
