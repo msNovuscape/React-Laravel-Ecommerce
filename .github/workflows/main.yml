@@ -1,4 +1,4 @@
-name: Update PR Description
+name: Update PR Message
 
 on:
   pull_request:
@@ -6,19 +6,19 @@ on:
       - opened
 
 jobs:
-  update-description:
+  update-pr-message:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Update PR Description
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Update PR Message
         run: |
+          PR_NUMBER=$GITHUB_EVENT_NUMBER
           PR_BRANCH=$(echo $GITHUB_REF | awk 'BEGIN{FS="/"} {print $3}')
-          PR_BODY=$(jq -r .pull_request.body $GITHUB_EVENT_PATH)
-          NEW_LINE="./merge_setup.sh -A -d $PR_BRANCH"
-          echo "$PR_BODY" > $GITHUB_EVENT_PATH
-          echo -e "$NEW_LINE\n\n$PR_BODY" > $GITHUB_EVENT_PATH
-          git add $GITHUB_EVENT_PATH
-          git commit -m "Update PR description"
-          git push
+          NEW_MESSAGE="./merge_setup.sh -A -d $PR_BRANCH"
+          UPDATED_MESSAGE=$(echo -e "$NEW_MESSAGE\n\n$(gh pr view $PR_NUMBER --json body -q .body)")
+          gh pr edit $PR_NUMBER --body "$UPDATED_MESSAGE"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
