@@ -20,7 +20,7 @@ jobs:
 
       - name: Update PR Description
         run: |
-          PR_BRANCH=$(echo "${{ steps.get-branch.outputs.branch }}")
+          PR_BRANCH=$(echo "${{ steps.get-branch.output.branch }}")
           PR_DESCRIPTION="merge_setup.sh -A -d $PR_BRANCH"
           echo "$PR_DESCRIPTION" > pr_description.txt
           gh pr edit $GITHUB_PR_NUMBER --body "$(cat pr_description.txt)"
