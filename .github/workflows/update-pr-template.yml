@@ -15,7 +15,7 @@ jobs:
 
       - name: Set Git User Identity
         run: |
-          USER_EMAIL="${{ github.event.pull_request.user.email }}"
+          USER_EMAIL="${{ github.event.pull_request.user.login }}@users.noreply.github.com"
           USER_NAME="${{ github.event.pull_request.user.login }}"
           git config --global user.email "$USER_EMAIL"
           git config --global user.name "$USER_NAME"
