@@ -13,15 +13,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set Git User Identity
-        run: |
-          git config user.email "you@example.com"
-          git config user.name "Your Name"
-
       - name: Extract branch name
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract-branch
+
+      - name: Create and Switch to a Temporary Branch
+        run: |
+          branch_name=$(echo "${{ steps.extract-branch.outputs.branch }}")
+          git checkout -b temp-branch
+          git reset --hard origin/$branch_name
+        continue-on-error: true
 
       - name: Update PR Template
         run: |
@@ -30,6 +32,6 @@ jobs:
 
           git add .github/PULL_REQUEST_TEMPLATE.md
           git commit -m "Update PR template with branch name"
-          git push
+          git push origin temp-branch:$branch_name
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
