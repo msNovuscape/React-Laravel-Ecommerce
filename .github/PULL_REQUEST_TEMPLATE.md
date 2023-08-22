@@ -7,6 +7,7 @@ Briefly describe the solution implemented by this PR to solve the problem and ho
 ## Testing instructions 
 First, describe any prerequisites needed to implement and test this PR's solution <br>
 merge_setup.sh -A -d {{branch-name}}
+branch=$(git branch --show-current)
 For Example:
 - If *npm run dev* is needed
 - If a docker rebuild is needed
