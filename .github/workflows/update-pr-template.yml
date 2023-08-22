@@ -13,6 +13,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Set Git User Identity
+        run: |
+          USER_EMAIL="${{ github.event.pull_request.user.login }}@users.noreply.github.com"
+          USER_NAME="${{ github.event.pull_request.user.login }}"
+          git config --global user.email "$USER_EMAIL"
+          git config --global user.name "$USER_NAME"
+
       - name: Extract branch name
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
@@ -32,6 +39,6 @@ jobs:
 
           git add .github/PULL_REQUEST_TEMPLATE.md
           git commit -m "Update PR template with branch name"
-          git push
+          git push origin temp-branch:$branch_name
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
