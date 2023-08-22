@@ -1,28 +1,35 @@
-name: Update PR Description
+name: Update PR Template
 
 on:
   pull_request:
     types:
       - opened
-      - synchronize
 
 jobs:
-  update-pr-description:
+  update-template:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Get Branch Name
-        id: get-branch
-        run: echo "::set-output name=branch::$(echo $GITHUB_REF | awk -F '/' '{print $3}')"
-
-      - name: Update PR Description
+      - name: Set Git User Identity
         run: |
-          PR_BRANCH=$(echo "${{ steps.get-branch.output.branch }}")
-          PR_DESCRIPTION="merge_setup.sh -A -d $PR_BRANCH"
-          echo "$PR_DESCRIPTION" > pr_description.txt
-          gh pr edit $GITHUB_PR_NUMBER --body "$(cat pr_description.txt)"
+          git config user.email "you@example.com"
+          git config user.name "Your Name"
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract-branch
+
+      - name: Update PR Template
+        run: |
+          branch_name=$(echo "${{ steps.extract-branch.outputs.branch }}")
+          sed -i "s|{{branch-name}}|$branch_name|" .github/PULL_REQUEST_TEMPLATE.md
+
+          git add .github/PULL_REQUEST_TEMPLATE.md
+          git commit -m "Update PR template with branch name"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
