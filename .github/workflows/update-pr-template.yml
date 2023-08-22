@@ -41,4 +41,4 @@ jobs:
           git commit -m "Update PR template with branch name"
           git push origin temp-branch:$branch_name
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
